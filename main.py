@@ -9,7 +9,6 @@ Usage:
 Author: CompliancePilot
 Version: 1.0.0
 """
-
 import uvicorn
 import os
 from dotenv import load_dotenv
