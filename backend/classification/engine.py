@@ -169,7 +169,7 @@ DOMAIN_REGISTRY = {
 # ================================================================
 # PII SANITIZER
 # Zero data leakage architecture.
-# No raw personal data ever sent to Groq.
+# No raw personal data ever sent to gemini.
 # ================================================================
 
 class PIISanitizer:
@@ -343,7 +343,7 @@ async def classify_decision(
     Security flow:
     1. Detect industry domain
     2. Sanitize all PII from input and output
-    3. Send only sanitized data to Groq
+    3. Send only sanitized data to gemini
     4. Attach legal disclaimer to result
     5. Update database with full classification
     """
@@ -393,7 +393,7 @@ async def classify_decision(
         sanitization_summary=sanitization_summary
     )
 
-    # Get classification from Groq
+    # Get classification from gemini
     classification = await _call_gemini(prompt)
 
     # Attach security and legal metadata
@@ -426,13 +426,13 @@ async def classify_decision(
 
 
 # ================================================================
-# GROQ API CALLER
+# gemini API CALLER
 # Only sanitized data reaches here. Ever.
 # ================================================================
 
-async def _call_groq(prompt: str) -> dict:
+async def _call_gemini(prompt: str) -> dict:
     """
-    Call Groq API with sanitized data only.
+    Call gemini API with sanitized data only.
     Returns safe default if API fails.
     System never crashes because classification failed.
     """
@@ -474,7 +474,7 @@ async def _call_groq(prompt: str) -> dict:
         return classification
 
     except Exception as e:
-        logger.error(f"Groq classification failed: {str(e)}")
+        logger.error(f"gemini classification failed: {str(e)}")
 
         # Safe default — never crash the system
         return {
