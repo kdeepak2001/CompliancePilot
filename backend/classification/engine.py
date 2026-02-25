@@ -57,8 +57,9 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CompliancePilot.Classification")
 
-client = Groq(api_key=os.environ.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY"))
-
+def get_groq_client():
+    api_key = os.environ.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
+    return Groq(api_key=api_key)
 
 # ================================================================
 # DOMAIN REGISTRY
@@ -436,7 +437,8 @@ async def _call_groq(prompt: str) -> dict:
     System never crashes because classification failed.
     """
     try:
-        response = client.chat.completions.create(
+        response = get_groq_client().chat.completions.create(
+
             model="llama-3.3-70b-versatile",
             messages=[
                 {
