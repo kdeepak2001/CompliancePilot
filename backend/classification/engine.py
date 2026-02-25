@@ -48,7 +48,7 @@ import re
 import logging
 import os
 from typing import Dict, Tuple
-from groq import Groq
+import google.generativeai as genai
 from dotenv import load_dotenv
 from backend.database.models import DecisionLog, SessionLocal
 
@@ -57,10 +57,10 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CompliancePilot.Classification")
 
-def get_groq_client():
-    api_key = os.environ.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
-    return Groq(api_key=api_key)
-
+def get_gemini_client():
+    api_key = os.environ.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY")
+    genai.configure(api_key=api_key)
+    return genai.GenerativeModel("gemini-2.5-flash")
 # ================================================================
 # DOMAIN REGISTRY
 # Universal design - any industry plugs in here.
@@ -394,14 +394,14 @@ async def classify_decision(
     )
 
     # Get classification from Groq
-    classification = await _call_groq(prompt)
+    classification = await _call_gemini(prompt)
 
     # Attach security and legal metadata
     classification["legal_disclaimer"] = LEGAL_DISCLAIMER
     classification["sanitization_summary"] = sanitization_summary
     classification["pii_items_protected"] = len(combined_map)
     classification["data_sent_to_external_api"] = "sanitized_only"
-    classification["classification_model"] = "llama-3.3-70b-versatile"
+    classification["classification_model"] = "gemini-2.5-flash"
     classification["domain_config"] = domain_config["name"]
 
     classification_time_ms = int((time.time() - start_time) * 1000)
@@ -437,30 +437,16 @@ async def _call_groq(prompt: str) -> dict:
     System never crashes because classification failed.
     """
     try:
-        response = get_groq_client().chat.completions.create(
-
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a regulatory compliance expert covering "
-                        "EU AI Act, HIPAA, SOC 2, GDPR, Indian DPDP Act 2023, "
-                        "IT Act 2000, RBI Guidelines, SEBI Guidelines. "
-                        "Always respond with valid JSON only. "
-                        "No markdown. No text outside JSON."
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-            temperature=0.1,
-            max_tokens=800
+        model = get_gemini_client()
+        full_prompt = (
+            "You are a regulatory compliance expert covering "
+            "EU AI Act, HIPAA, SOC 2, GDPR, Indian DPDP Act 2023, "
+            "IT Act 2000, RBI Guidelines, SEBI Guidelines. "
+            "Always respond with valid JSON only. "
+            "No markdown. No text outside JSON.\n\n" + prompt
         )
-
-        raw_response = response.choices[0].message.content.strip()
+        response = model.generate_content(full_prompt)
+        raw_response = response.text.strip()
 
         # Clean markdown if model adds it
         if "```" in raw_response:
@@ -554,7 +540,7 @@ async def _update_decision(
             classification.get("classification_reasoning", "") +
             " | " + sanitization_summary
         )
-        decision.classification_model = "llama-3.3-70b-versatile"
+        decision.classification_model = "gemini-2.5-flash"
         decision.classification_time_ms = classification_time_ms
 
         if decision.requires_human_review:
