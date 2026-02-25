@@ -57,7 +57,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CompliancePilot.Classification")
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+client = Groq(api_key=os.environ.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY"))
 
 
 # ================================================================
