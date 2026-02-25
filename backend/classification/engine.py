@@ -60,7 +60,7 @@ logger = logging.getLogger("CompliancePilot.Classification")
 def get_gemini_client():
     api_key = os.environ.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY")
     genai.configure(api_key=api_key)
-    return genai.GenerativeModel("gemini-2.5-flash")
+    return genai.GenerativeModel("gemini-2.0-flash")
 # ================================================================
 # DOMAIN REGISTRY
 # Universal design - any industry plugs in here.
