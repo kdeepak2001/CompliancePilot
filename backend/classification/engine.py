@@ -1,45 +1,6 @@
 """
-CompliancePilot - Enterprise Secure Classification Engine
-==========================================================
-Version 3.0.0 - Multi-Domain Universal Design
-
-SECURITY ARCHITECTURE:
-- Zero raw PII ever leaves this system
-- All data sanitized before external API call
-- Indian and International PII patterns covered
-- Full audit trail of every sanitization action
-
-REGULATORY COVERAGE:
-
-INTERNATIONAL:
-- EU AI Act 2024 (Articles 9, 13, 14, 16, Annex III)
-- HIPAA Security Rule (Section 164.312)
-- SOC 2 Type II (Processing Integrity, Confidentiality)
-- GDPR (Articles 5, 6, 9, 22, 25)
-
-INDIA - UPDATED FEBRUARY 2026:
-- DPDP Act 2023 + DPDP Rules 2025
-  (Rules notified 14 November 2025)
-  (Phase 1 active, Phase 2 November 2026, Phase 3 May 2027)
-  (Data Protection Board established November 13 2025)
-  (Maximum penalty Rs 250 crores per breach)
-- IT Act 2000 (Sections 43, 66, 72A)
-- RBI Guidelines on Responsible AI in Banking 2024
-- SEBI AI/ML Circular 2023
-- Indian Medical Council AI Guidelines
-- IRDAI Guidelines on AI in Insurance
-
-SUPPORTED DOMAINS:
-- Healthcare, Finance, HR, Legal, Education,
-  Government, Retail, General
-
-LEGAL NOTICE:
-Classifications are AI-assisted recommendations only.
-Not legal, medical, or financial advice.
-Human review mandatory for High and Critical decisions.
-
-Author: CompliancePilot
-Version: 3.0.0
+CompliancePilot - Classification Engine
+Version 3.0.0 - Gemini Powered
 """
 
 import json
@@ -48,7 +9,8 @@ import re
 import logging
 import os
 from typing import Dict, Tuple
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 from backend.database.models import DecisionLog, SessionLocal
 
@@ -57,15 +19,11 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CompliancePilot.Classification")
 
+
 def get_gemini_client():
     api_key = os.environ.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY")
-    genai.configure(api_key=api_key)
-    return genai.GenerativeModel("gemini-2.0-flash")
-# ================================================================
-# DOMAIN REGISTRY
-# Universal design - any industry plugs in here.
-# Adding a new domain requires zero code changes.
-# ================================================================
+    return genai.Client(api_key=api_key)
+
 
 DOMAIN_REGISTRY = {
     "healthcare": {
@@ -74,11 +32,7 @@ DOMAIN_REGISTRY = {
         "indian_regulations": ["DPDP_ACT_2023", "IT_ACT_2000", "IMC_GUIDELINES"],
         "default_risk": "High",
         "auto_review_threshold": "Medium",
-        "key_risks": [
-            "Patient data exposure",
-            "Clinical decision liability",
-            "Treatment recommendation errors"
-        ]
+        "key_risks": ["Patient data exposure", "Clinical decision liability", "Treatment recommendation errors"]
     },
     "finance": {
         "name": "Finance and Banking",
@@ -86,11 +40,7 @@ DOMAIN_REGISTRY = {
         "indian_regulations": ["RBI_AI_GUIDELINES_2024", "SEBI_AI_CIRCULAR", "DPDP_ACT_2023"],
         "default_risk": "High",
         "auto_review_threshold": "Medium",
-        "key_risks": [
-            "Biased credit decisions",
-            "Financial data exposure",
-            "KYC compliance failures"
-        ]
+        "key_risks": ["Biased credit decisions", "Financial data exposure", "KYC compliance failures"]
     },
     "hr": {
         "name": "Human Resources",
@@ -98,11 +48,7 @@ DOMAIN_REGISTRY = {
         "indian_regulations": ["DPDP_ACT_2023", "IT_ACT_2000"],
         "default_risk": "High",
         "auto_review_threshold": "Low",
-        "key_risks": [
-            "Discriminatory hiring decisions",
-            "Employee data privacy",
-            "Bias in performance scoring"
-        ]
+        "key_risks": ["Discriminatory hiring decisions", "Employee data privacy", "Bias in performance scoring"]
     },
     "legal": {
         "name": "Legal Services",
@@ -110,11 +56,7 @@ DOMAIN_REGISTRY = {
         "indian_regulations": ["DPDP_ACT_2023", "IT_ACT_2000"],
         "default_risk": "High",
         "auto_review_threshold": "Low",
-        "key_risks": [
-            "Privileged information exposure",
-            "Incorrect legal advice liability",
-            "Client confidentiality breach"
-        ]
+        "key_risks": ["Privileged information exposure", "Incorrect legal advice liability", "Client confidentiality breach"]
     },
     "education": {
         "name": "Education",
@@ -122,11 +64,7 @@ DOMAIN_REGISTRY = {
         "indian_regulations": ["DPDP_ACT_2023", "IT_ACT_2000"],
         "default_risk": "Medium",
         "auto_review_threshold": "Medium",
-        "key_risks": [
-            "Biased student assessment",
-            "Minor data protection under DPDP Section 9",
-            "Discriminatory admissions"
-        ]
+        "key_risks": ["Biased student assessment", "Minor data protection under DPDP Section 9", "Discriminatory admissions"]
     },
     "government": {
         "name": "Government and Public Services",
@@ -134,11 +72,7 @@ DOMAIN_REGISTRY = {
         "indian_regulations": ["DPDP_ACT_2023", "IT_ACT_2000"],
         "default_risk": "High",
         "auto_review_threshold": "Low",
-        "key_risks": [
-            "Discriminatory service denial",
-            "Citizen data privacy",
-            "Fundamental rights violations"
-        ]
+        "key_risks": ["Discriminatory service denial", "Citizen data privacy", "Fundamental rights violations"]
     },
     "retail": {
         "name": "Retail and E-Commerce",
@@ -146,11 +80,7 @@ DOMAIN_REGISTRY = {
         "indian_regulations": ["DPDP_ACT_2023", "IT_ACT_2000"],
         "default_risk": "Medium",
         "auto_review_threshold": "High",
-        "key_risks": [
-            "Customer data profiling",
-            "Children targeting under DPDP Section 9",
-            "Consent violations"
-        ]
+        "key_risks": ["Customer data profiling", "Children targeting under DPDP Section 9", "Consent violations"]
     },
     "general": {
         "name": "General",
@@ -158,54 +88,29 @@ DOMAIN_REGISTRY = {
         "indian_regulations": ["DPDP_ACT_2023", "IT_ACT_2000"],
         "default_risk": "Low",
         "auto_review_threshold": "High",
-        "key_risks": [
-            "General data privacy risks",
-            "Automated decision transparency"
-        ]
+        "key_risks": ["General data privacy risks", "Automated decision transparency"]
     }
 }
 
 
-# ================================================================
-# PII SANITIZER
-# Zero data leakage architecture.
-# No raw personal data ever sent to gemini.
-# ================================================================
-
 class PIISanitizer:
-    """
-    Detects and masks PII before sending to external APIs.
-    Covers Indian and International PII patterns.
-    Satisfies GDPR Article 25, DPDP Act 2023 Section 8,
-    HIPAA Minimum Necessary Standard.
-    """
-
     def __init__(self):
         self.patterns = {
-            # International
             "EMAIL": r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
             "PHONE_INTL": r'\+?1?\s*\(?[0-9]{3}\)?[\s.-]?[0-9]{3}[\s.-]?[0-9]{4}',
             "CREDIT_CARD": r'\b(?:\d{4}[\s-]?){3}\d{4}\b',
             "SSN": r'\b\d{3}-\d{2}-\d{4}\b',
-            "IP_ADDRESS": r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b',
-            # Indian specific
             "AADHAAR": r'\b[2-9]{1}[0-9]{3}\s?[0-9]{4}\s?[0-9]{4}\b',
             "PAN_CARD": r'\b[A-Z]{5}[0-9]{4}[A-Z]{1}\b',
             "INDIAN_PHONE": r'\b[6-9]\d{9}\b',
-            "PASSPORT_INDIA": r'\b[A-Z]{1}[0-9]{7}\b',
-            "VOTER_ID": r'\b[A-Z]{3}[0-9]{7}\b',
             "GSTIN": r'\b\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}\b',
-            "IFSC": r'\b[A-Z]{4}0[A-Z0-9]{6}\b',
-            # Medical
             "PATIENT_ID": r'\bPATIENT[_\s]?ID[:\s]+[A-Z0-9]+\b',
-            "MRN": r'\bMRN[:\s]+[A-Z0-9]+\b',
         }
 
     def sanitize(self, text: str) -> Tuple[str, Dict]:
         sanitized = text
         sanitization_map = {}
         counters = {}
-
         for pii_type, pattern in self.patterns.items():
             matches = re.findall(pattern, sanitized, re.IGNORECASE)
             for match in matches:
@@ -214,7 +119,6 @@ class PIISanitizer:
                     token = f"[{pii_type}_{counters[pii_type]}]"
                     sanitization_map[match] = token
                     sanitized = sanitized.replace(match, token)
-
         return sanitized, sanitization_map
 
     def get_summary(self, sanitization_map: Dict) -> str:
@@ -224,111 +128,54 @@ class PIISanitizer:
         for original, token in sanitization_map.items():
             pii_type = token.split("_")[0].replace("[", "")
             types_found.add(pii_type)
-        return (
-            f"PII sanitized before external API call. "
-            f"Types masked: {', '.join(types_found)}. "
-            f"Total items masked: {len(sanitization_map)}. "
-            f"Original data retained only in local database."
-        )
+        return f"PII sanitized. Types masked: {', '.join(types_found)}. Total items: {len(sanitization_map)}."
 
-
-# ================================================================
-# LEGAL DISCLAIMER
-# Attached to every classification output.
-# ================================================================
 
 LEGAL_DISCLAIMER = """
-LEGAL NOTICE - READ CAREFULLY:
-
-1. AI ASSISTED CLASSIFICATION ONLY
-   This is an AI-assisted recommendation. Not legal,
-   medical, or financial advice of any kind.
-
-2. HUMAN REVIEW MANDATORY
-   High and Critical risk decisions require mandatory
-   human review before any action is taken.
-
-3. INDIAN LAW NOTICE
-   DPDP Act 2023 Rules notified 14 November 2025.
-   Data Protection Board established and operational.
-   Maximum penalty: Rs 250 crores per breach.
-   Phase 2 enforcement: November 2026.
-   Phase 3 full enforcement: May 2027.
-   Organizations must comply with all applicable phases.
-
-4. LIABILITY LIMITATION
-   CompliancePilot accepts no liability for decisions
-   made solely on the basis of this classification.
-
-5. DATA PROTECTION
-   All personal data sanitized before classification.
-   Original data never transmitted to external services.
+LEGAL NOTICE: This is an AI-assisted recommendation only.
+Not legal, medical, or financial advice.
+Human review mandatory for High and Critical risk decisions.
+DPDP Act 2023 Rules notified 14 November 2025.
+Maximum penalty Rs 250 crores per breach.
 """
 
-
-# ================================================================
-# CLASSIFICATION PROMPT
-# Covers all domains and regulations.
-# ================================================================
-
 CLASSIFICATION_PROMPT = """
-You are a senior AI regulatory compliance expert covering:
+You are a senior AI regulatory compliance expert.
 
-INTERNATIONAL: EU AI Act 2024, HIPAA, SOC 2 Type II, GDPR
-INDIA: DPDP Act 2023 + Rules 2025, IT Act 2000, RBI AI Guidelines 2024,
-       SEBI AI Circular 2023, Indian Medical Council Guidelines,
-       IRDAI AI Guidelines
+AGENT: {agent_id}
+INDUSTRY: {industry}
+REGULATIONS: {applicable_regulations}
+KEY RISKS: {key_risks}
 
-AGENT INFORMATION:
-Agent ID: {agent_id}
-Industry Domain: {industry}
-Applicable Regulations: {applicable_regulations}
-Domain Key Risks: {key_risks}
+SANITIZED INPUT: {sanitized_input}
+SANITIZED OUTPUT: {sanitized_output}
+PII NOTE: {sanitization_summary}
 
-NOTE: Input below is pre-sanitized. PII replaced with tokens.
-Classify based on context and nature of decision only.
-
-SANITIZED INPUT:
-{sanitized_input}
-
-SANITIZED OUTPUT:
-{sanitized_output}
-
-SANITIZATION SUMMARY:
-{sanitization_summary}
-
-RISK TIER RULES:
-- Critical (80-100): Medical diagnosis, treatment decisions, loan denial,
-  HR termination, criminal justice, children data under DPDP Section 9
-- High (60-79): HR screening, financial advisory, insurance decisions,
-  sensitive personal data under DPDP Section 9, credit scoring
-- Medium (40-59): Customer service with personal data, scheduling,
-  general financial queries, content recommendations
-- Low (0-39): General information, factual queries, no personal data
+RISK RULES:
+- Critical (80-100): Medical diagnosis, treatment, loan denial, HR termination, children data
+- High (60-79): HR screening, financial advisory, insurance, credit scoring
+- Medium (40-59): Customer service with personal data, scheduling
+- Low (0-39): General information, no personal data
 
 RESPOND WITH VALID JSON ONLY. NO TEXT OUTSIDE JSON.
 
 {{
     "regulatory_domain": "primary regulation code",
-    "secondary_regulations": ["list of other applicable regulations"],
+    "secondary_regulations": ["list"],
     "risk_tier": "Low or Medium or High or Critical",
-    "risk_score": <integer 0-100>,
-    "article_triggered": "primary article reference",
-    "secondary_articles": ["other applicable articles"],
-    "recommended_action": "specific action required",
-    "requires_human_review": <true or false>,
-    "classification_reasoning": "2-3 sentences explaining classification",
-    "compliance_notes": "specific compliance requirements",
-    "indian_law_notes": "specific Indian law considerations if applicable",
-    "dpdp_applicability": "DPDP Act 2023 specific notes including phase timeline",
-    "data_handling_recommendation": "how data in this decision should be handled"
+    "risk_score": 0,
+    "article_triggered": "primary article",
+    "secondary_articles": ["list"],
+    "recommended_action": "specific action",
+    "requires_human_review": true,
+    "classification_reasoning": "2-3 sentences",
+    "compliance_notes": "specific requirements",
+    "indian_law_notes": "Indian law considerations",
+    "dpdp_applicability": "DPDP Act 2023 notes",
+    "data_handling_recommendation": "data handling guidance"
 }}
 """
 
-
-# ================================================================
-# MAIN CLASSIFICATION FUNCTION
-# ================================================================
 
 async def classify_decision(
     decision_id: int,
@@ -337,55 +184,30 @@ async def classify_decision(
     agent_id: str,
     decision_context: str = "{}"
 ) -> dict:
-    """
-    Securely classify an AI agent decision.
-
-    Security flow:
-    1. Detect industry domain
-    2. Sanitize all PII from input and output
-    3. Send only sanitized data to gemini
-    4. Attach legal disclaimer to result
-    5. Update database with full classification
-    """
     start_time = time.time()
+    logger.info(f"Starting classification | Decision: {decision_id} | Agent: {agent_id}")
 
-    logger.info(
-        f"Starting classification | "
-        f"Decision: {decision_id} | Agent: {agent_id}"
-    )
-
-    # Detect domain from context
     try:
         context = json.loads(decision_context)
         industry = context.get("industry", "general").lower()
     except Exception:
         industry = "general"
 
-    # Get domain configuration
-    domain_config = DOMAIN_REGISTRY.get(
-        industry,
-        DOMAIN_REGISTRY["general"]
-    )
+    domain_config = DOMAIN_REGISTRY.get(industry, DOMAIN_REGISTRY["general"])
 
-    # Sanitize PII
     sanitizer = PIISanitizer()
     sanitized_input, input_map = sanitizer.sanitize(input_prompt)
     sanitized_output, output_map = sanitizer.sanitize(agent_output)
     combined_map = {**input_map, **output_map}
     sanitization_summary = sanitizer.get_summary(combined_map)
 
-    logger.info(
-        f"PII sanitized | Items masked: {len(combined_map)} | "
-        f"Decision: {decision_id}"
-    )
+    logger.info(f"PII sanitized | Items masked: {len(combined_map)} | Decision: {decision_id}")
 
-    # Build prompt with domain specific context
     prompt = CLASSIFICATION_PROMPT.format(
         agent_id=agent_id,
         industry=domain_config["name"],
         applicable_regulations=", ".join(
-            domain_config["primary_regulations"] +
-            domain_config["indian_regulations"]
+            domain_config["primary_regulations"] + domain_config["indian_regulations"]
         ),
         key_risks=", ".join(domain_config["key_risks"]),
         sanitized_input=sanitized_input[:2000],
@@ -393,20 +215,15 @@ async def classify_decision(
         sanitization_summary=sanitization_summary
     )
 
-    # Get classification from gemini
     classification = await _call_gemini(prompt)
 
-    # Attach security and legal metadata
     classification["legal_disclaimer"] = LEGAL_DISCLAIMER
     classification["sanitization_summary"] = sanitization_summary
     classification["pii_items_protected"] = len(combined_map)
-    classification["data_sent_to_external_api"] = "sanitized_only"
-    classification["classification_model"] = "gemini-2.5-flash"
-    classification["domain_config"] = domain_config["name"]
+    classification["classification_model"] = "gemini-2.0-flash"
 
     classification_time_ms = int((time.time() - start_time) * 1000)
 
-    # Update database
     await _update_decision(
         decision_id=decision_id,
         classification=classification,
@@ -425,19 +242,9 @@ async def classify_decision(
     return classification
 
 
-# ================================================================
-# gemini API CALLER
-# Only sanitized data reaches here. Ever.
-# ================================================================
-
 async def _call_gemini(prompt: str) -> dict:
-    """
-    Call gemini API with sanitized data only.
-    Returns safe default if API fails.
-    System never crashes because classification failed.
-    """
     try:
-        model = get_gemini_client()
+        client = get_gemini_client()
         full_prompt = (
             "You are a regulatory compliance expert covering "
             "EU AI Act, HIPAA, SOC 2, GDPR, Indian DPDP Act 2023, "
@@ -445,10 +252,12 @@ async def _call_gemini(prompt: str) -> dict:
             "Always respond with valid JSON only. "
             "No markdown. No text outside JSON.\n\n" + prompt
         )
-        response = model.generate_content(full_prompt)
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=full_prompt
+        )
         raw_response = response.text.strip()
 
-        # Clean markdown if model adds it
         if "```" in raw_response:
             parts = raw_response.split("```")
             for part in parts:
@@ -461,7 +270,6 @@ async def _call_gemini(prompt: str) -> dict:
 
         classification = json.loads(raw_response)
 
-        # Validate required fields
         required_fields = [
             "regulatory_domain", "risk_tier", "risk_score",
             "article_triggered", "recommended_action",
@@ -474,9 +282,7 @@ async def _call_gemini(prompt: str) -> dict:
         return classification
 
     except Exception as e:
-        logger.error(f"gemini classification failed: {str(e)}")
-
-        # Safe default — never crash the system
+        logger.error(f"Gemini classification failed: {str(e)}")
         return {
             "regulatory_domain": "General",
             "secondary_regulations": [],
@@ -486,11 +292,7 @@ async def _call_gemini(prompt: str) -> dict:
             "secondary_articles": [],
             "recommended_action": "Manual classification required due to system error",
             "requires_human_review": True,
-            "classification_reasoning": (
-                "Automatic classification failed. "
-                "Defaulting to Medium risk with human review required "
-                "to ensure compliance is not compromised."
-            ),
+            "classification_reasoning": "Automatic classification failed. Defaulting to Medium risk with human review required.",
             "compliance_notes": "Manual review required",
             "indian_law_notes": "Manual review required",
             "dpdp_applicability": "Manual review required",
@@ -498,49 +300,29 @@ async def _call_gemini(prompt: str) -> dict:
         }
 
 
-# ================================================================
-# DATABASE UPDATER
-# ================================================================
-
 async def _update_decision(
     decision_id: int,
     classification: dict,
     classification_time_ms: int,
     sanitization_summary: str
 ) -> None:
-    """
-    Update decision record with classification results.
-    """
     db = SessionLocal()
-
     try:
-        decision = db.query(DecisionLog).filter(
-            DecisionLog.id == decision_id
-        ).first()
-
+        decision = db.query(DecisionLog).filter(DecisionLog.id == decision_id).first()
         if not decision:
             logger.error(f"Decision {decision_id} not found")
             return
 
-        decision.regulatory_domain = classification.get(
-            "regulatory_domain", "General"
-        )
+        decision.regulatory_domain = classification.get("regulatory_domain", "General")
         decision.risk_tier = classification.get("risk_tier", "Medium")
         decision.risk_score = classification.get("risk_score", 50)
-        decision.article_triggered = classification.get(
-            "article_triggered", "None"
-        )
-        decision.recommended_action = classification.get(
-            "recommended_action", "None"
-        )
-        decision.requires_human_review = classification.get(
-            "requires_human_review", False
-        )
+        decision.article_triggered = classification.get("article_triggered", "None")
+        decision.recommended_action = classification.get("recommended_action", "None")
+        decision.requires_human_review = classification.get("requires_human_review", False)
         decision.classification_reasoning = (
-            classification.get("classification_reasoning", "") +
-            " | " + sanitization_summary
+            classification.get("classification_reasoning", "") + " | " + sanitization_summary
         )
-        decision.classification_model = "gemini-2.5-flash"
+        decision.classification_model = "gemini-2.0-flash"
         decision.classification_time_ms = classification_time_ms
 
         if decision.requires_human_review:
@@ -549,16 +331,10 @@ async def _update_decision(
             decision.review_status = "not_required"
 
         db.commit()
-
-        logger.info(
-            f"Decision {decision_id} updated | "
-            f"Risk: {decision.risk_tier} | "
-            f"Review required: {decision.requires_human_review}"
-        )
+        logger.info(f"Decision {decision_id} updated | Risk: {decision.risk_tier} | Review required: {decision.requires_human_review}")
 
     except Exception as e:
         logger.error(f"Failed to update decision {decision_id}: {str(e)}")
         db.rollback()
-
     finally:
         db.close()
