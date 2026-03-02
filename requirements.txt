@@ -12,4 +12,4 @@ starlette==0.52.1
 anyio==4.12.1
 langchain-core==1.2.14
 google-generativeai==0.8.6
-google-genai
+google-genai :
