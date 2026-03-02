@@ -220,7 +220,7 @@ async def classify_decision(
     classification["legal_disclaimer"] = LEGAL_DISCLAIMER
     classification["sanitization_summary"] = sanitization_summary
     classification["pii_items_protected"] = len(combined_map)
-    classification["classification_model"] = "gemini-2.0-flash-001-001"
+    classification["classification_model"] = "gemini-2.0-flash-001"
 
     classification_time_ms = int((time.time() - start_time) * 1000)
 
@@ -253,7 +253,7 @@ async def _call_gemini(prompt: str) -> dict:
             "No markdown. No text outside JSON.\n\n" + prompt
         )
         response = client.models.generate_content(
-            model="gemini-2.0-flash-001-001",
+            model="gemini-2.0-flash-001",
             contents=full_prompt
         )
         raw_response = response.text.strip()
@@ -322,7 +322,7 @@ async def _update_decision(
         decision.classification_reasoning = (
             classification.get("classification_reasoning", "") + " | " + sanitization_summary
         )
-        decision.classification_model = "gemini-2.0-flash-001-001"
+        decision.classification_model = "gemini-2.0-flash-001"
         decision.classification_time_ms = classification_time_ms
 
         if decision.requires_human_review:
