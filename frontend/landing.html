@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CompliancePilot — AI Governance Layer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810;
+  --bg2: #080d1a;
+  --surface: #0d1526;
+  --border: #1a2540;
+  --accent: #00d4ff;
+  --accent2: #ff3c5f;
+  --accent3: #00ff88;
+  --text: #e8edf5;
+  --muted: #6b7a99;
+  --critical: #ff3c5f;
+  --high: #ff8c42;
+  --medium: #ffd166;
+  --low: #00ff88;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; z-index: 0; }
+.orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+.orb1 { width: 600px; height: 600px; background: rgba(0,212,255,0.06); top: -200px; left: -200px; }
+.orb2 { width: 500px; height: 500px; background: rgba(255,60,95,0.05); bottom: 0; right: -100px; }
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 60px; display: flex; align-items: center; justify-content: space-between; background: rgba(5,8,16,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+.nav-logo { display: flex; align-items: center; gap: 12px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; }
+.nav-logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent), #0080ff); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; color: #fff; }
+.nav-links { display: flex; align-items: center; gap: 40px; list-style: none; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta { padding: 10px 24px; background: var(--accent); color: #000; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: all 0.2s; font-family: 'Syne', sans-serif; }
+.nav-cta:hover { background: #fff; }
+section { position: relative; z-index: 1; }
+.hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 120px 40px 80px; }
+.hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3); border-radius: 100px; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--accent); margin-bottom: 32px; animation: fadeUp 0.6s ease both; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.hero-badge::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+.hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 24px; animation: fadeUp 0.6s ease 0.1s both; }
+.hero h1 span { background: linear-gradient(135deg, var(--accent), #0080ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 1.25rem; color: var(--muted); max-width: 600px; line-height: 1.7; margin-bottom: 48px; font-weight: 300; animation: fadeUp 0.6s ease 0.2s both; }
+.hero-actions { display: flex; gap: 16px; align-items: center; animation: fadeUp 0.6s ease 0.3s both; }
+.btn-primary { padding: 14px 32px; background: var(--accent); color: #000; border-radius: 8px; text-decoration: none; font-weight: 700; font-family: 'Syne', sans-serif; font-size: 1rem; transition: all 0.2s; }
+.btn-primary:hover { background: #fff; transform: translateY(-2px); }
+.btn-secondary { padding: 14px 32px; background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 1rem; transition: all 0.2s; }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.risk-demo { display: flex; gap: 12px; justify-content: center; margin-top: 48px; flex-wrap: wrap; animation: fadeUp 0.6s ease 0.5s both; }
+.risk-pill { padding: 8px 20px; border-radius: 100px; font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 8px; border: 1px solid; }
+.risk-pill.critical { background: rgba(255,60,95,0.1); border-color: rgba(255,60,95,0.3); color: var(--critical); }
+.risk-pill.high { background: rgba(255,140,66,0.1); border-color: rgba(255,140,66,0.3); color: var(--high); }
+.risk-pill.medium { background: rgba(255,209,102,0.1); border-color: rgba(255,209,102,0.3); color: var(--medium); }
+.risk-pill.low { background: rgba(0,255,136,0.1); border-color: rgba(0,255,136,0.3); color: var(--low); }
+.risk-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 2s infinite; }
+.stats-bar { display: flex; justify-content: center; gap: 60px; padding: 40px 60px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: rgba(13,21,38,0.5); }
+.stat { text-align: center; }
+.stat-number { font-family: 'Space Mono', monospace; font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.1em; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+.reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.section-label { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
+.section-title { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 20px; }
+.section-desc { color: var(--muted); font-size: 1.1rem; line-height: 1.7; max-width: 600px; margin-bottom: 60px; }
+</style>
+<style>
+.problem { padding: 100px 60px; max-width: 1200px; margin: 0 auto; }
+.problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.problem-card { padding: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; transition: all 0.3s; }
+.problem-card:hover { border-color: var(--accent2); transform: translateY(-4px); }
+.problem-icon { font-size: 2rem; margin-bottom: 16px; }
+.problem-card h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; color: var(--accent2); }
+.problem-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+.how { padding: 100px 60px; background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.how-inner { max-width: 1200px; margin: 0 auto; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 60px; }
+.step { padding: 40px 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+.step-number { font-family: 'Space Mono', monospace; font-size: 3rem; font-weight: 700; color: rgba(0,212,255,0.15); line-height: 1; margin-bottom: 20px; }
+.step h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; color: var(--accent); }
+.step p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+.features { padding: 100px 60px; max-width: 1200px; margin: 0 auto; }
+.features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 60px; }
+.feature-card { padding: 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; transition: all 0.3s; position: relative; overflow: hidden; }
+.feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); opacity: 0; transition: opacity 0.3s; }
+.feature-card:hover::before { opacity: 1; }
+.feature-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-4px); }
+.feature-icon { width: 48px; height: 48px; background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 20px; }
+.feature-card h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; }
+.feature-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+.regulations { padding: 100px 60px; background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.regulations-inner { max-width: 1200px; margin: 0 auto; }
+.reg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 60px; }
+.reg-card { padding: 28px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; text-align: center; transition: all 0.3s; }
+.reg-card:hover { border-color: var(--accent3); box-shadow: 0 0 20px rgba(0,255,136,0.1); }
+.reg-flag { font-size: 1.8rem; margin-bottom: 12px; }
+.reg-name { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--accent3); font-weight: 700; margin-bottom: 6px; letter-spacing: 0.05em; }
+.reg-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
+.tech { padding: 100px 60px; max-width: 1200px; margin: 0 auto; }
+.tech-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 60px; }
+.tech-card { padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; gap: 16px; transition: all 0.2s; }
+.tech-card:hover { border-color: rgba(0,212,255,0.3); transform: translateX(4px); }
+.tech-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.tech-name { font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700; }
+.tech-role { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.usecases { padding: 100px 60px; background: var(--bg2); border-top: 1px solid var(--border); }
+.usecases-inner { max-width: 1200px; margin: 0 auto; }
+.cases-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 60px; }
+.case-card { padding: 40px 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; transition: all 0.3s; position: relative; overflow: hidden; }
+.case-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
+.case-card.healthcare::after { background: var(--critical); }
+.case-card.finance::after { background: var(--medium); }
+.case-card.hr::after { background: var(--high); }
+.case-card:hover { transform: translateY(-6px); box-shadow: 0 30px 60px rgba(0,0,0,0.3); }
+.case-emoji { font-size: 2.5rem; margin-bottom: 20px; }
+.case-tag { display: inline-block; padding: 4px 12px; border-radius: 100px; font-family: 'Space Mono', monospace; font-size: 0.7rem; font-weight: 700; margin-bottom: 16px; }
+.healthcare .case-tag { background: rgba(255,60,95,0.15); color: var(--critical); }
+.finance .case-tag { background: rgba(255,209,102,0.15); color: var(--medium); }
+.hr .case-tag { background: rgba(255,140,66,0.15); color: var(--high); }
+.case-card h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 12px; }
+.case-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; }
+.case-risk { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--muted); }
+.cta-section { padding: 120px 60px; text-align: center; }
+.cta-section h2 { font-family: 'Syne', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 20px; }
+.cta-section p { color: var(--muted); font-size: 1.1rem; margin-bottom: 48px; }
+.cta-actions { display: flex; gap: 16px; justify-content: center; }
+.built-by { padding: 60px; max-width: 1200px; margin: 60px auto; display: flex; align-items: center; gap: 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+.built-avatar { width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent), #0080ff); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: #000; flex-shrink: 0; }
+.built-info h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
+.built-info p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px; }
+.built-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.built-tag { padding: 4px 12px; background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.2); border-radius: 100px; font-size: 0.75rem; color: var(--accent); font-family: 'Space Mono', monospace; }
+footer { padding: 40px 60px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg2); }
+.footer-left { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--muted); }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+.footer-links a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">CP</div>
+    CompliancePilot
+  </div>
+  <ul class="nav-links">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#usecases">Use Cases</a></li>
+    <li><a href="#tech">Tech Stack</a></li>
+  </ul>
+  <a href="/static/index.html" class="nav-cta">Open Dashboard →</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">🔴 Live Prototype — March 2026</div>
+  <h1>AI Governance.<br><span>Automated.</span></h1>
+  <p class="hero-sub">CompliancePilot intercepts every AI agent decision, classifies regulatory risk in real time, and generates audit-ready compliance evidence — automatically.</p>
+  <div class="hero-actions">
+    <a href="/static/index.html" class="btn-primary">View Live Dashboard →</a>
+    <a href="https://github.com/kdeepak2001/CompliancePilot" target="_blank" class="btn-secondary">GitHub Repository</a>
+  </div>
+  <div class="risk-demo">
+    <div class="risk-pill critical">CRITICAL — Medical Triage</div>
+    <div class="risk-pill high">HIGH — HR Screening</div>
+    <div class="risk-pill medium">MEDIUM — Financial Advisory</div>
+    <div class="risk-pill low">LOW — General Query</div>
+  </div>
+</section>
+
+<div class="stats-bar reveal">
+  <div class="stat"><div class="stat-number">8+</div><div class="stat-label">Regulatory Frameworks</div></div>
+  <div class="stat"><div class="stat-number">&lt;5s</div><div class="stat-label">Classification Time</div></div>
+  <div class="stat"><div class="stat-number">100%</div><div class="stat-label">Decision Coverage</div></div>
+  <div class="stat"><div class="stat-number">$0</div><div class="stat-label">Infrastructure Cost</div></div>
+  <div class="stat"><div class="stat-number">4</div><div class="stat-label">Report Types</div></div>
+</div>
+
+<section class="problem" id="problem">
+  <div class="reveal">
+    <div class="section-label">// THE PROBLEM</div>
+    <h2 class="section-title">Companies are flying blind<br>on AI compliance.</h2>
+    <p class="section-desc">Every AI agent your organization runs is making autonomous decisions right now — with zero documentation, zero oversight records, and zero regulatory evidence.</p>
+  </div>
+  <div class="problem-grid reveal">
+    <div class="problem-card"><div class="problem-icon">⚖️</div><h3>EU AI Act is Law</h3><p>High-risk AI systems must have audit trails, human oversight records, and compliance documentation by August 2026. Most companies have nothing.</p></div>
+    <div class="problem-card"><div class="problem-icon">🇮🇳</div><h3>DPDP Act 2023 Enforced</h3><p>India's Data Protection Board is active. Rules notified November 2025. Maximum penalty Rs 250 crores per breach. AI decisions involving personal data are exposed.</p></div>
+    <div class="problem-card"><div class="problem-icon">🔍</div><h3>Zero Audit Tooling</h3><p>No standardized tooling exists at the agent-decision level. Legal teams are demanding governance. Boards are demanding oversight records. Nobody has answers.</p></div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="how-inner">
+    <div class="reveal">
+      <div class="section-label">// HOW IT WORKS</div>
+      <h2 class="section-title">Three layers. Zero friction.</h2>
+      <p class="section-desc">CompliancePilot wraps around your existing AI agents. No changes to your code. One import line and every decision is governed.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step"><div class="step-number">01</div><h3>Decision Interception</h3><p>A lightweight wrapper captures every AI agent decision — full input, output, tool calls, timestamps — before it reaches the end user. Zero latency impact.</p></div>
+      <div class="step"><div class="step-number">02</div><h3>Regulatory Classification</h3><p>Gemini 2.5 Flash classifies each decision against EU AI Act, HIPAA, SOC 2, and DPDP Act 2023. Risk tier assigned in under 5 seconds. PII sanitized before any external API call.</p></div>
+      <div class="step"><div class="step-number">03</div><h3>Compliance Evidence</h3><p>Auto-generates AI System Card, Decision Audit Trail, Human Oversight Record, and Risk Assessment Summary. Exportable as PDF on demand.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="reveal">
+    <div class="section-label">// FEATURES</div>
+    <h2 class="section-title">Everything a compliance<br>team needs.</h2>
+  </div>
+  <div class="features-grid reveal">
+    <div class="feature-card"><div class="feature-icon">🛡️</div><h3>PII Protection Layer</h3><p>Zero raw personal data ever leaves the system. Aadhaar, PAN, phone numbers, emails — all masked before classification. Satisfies GDPR Article 25 and DPDP Act Section 8.</p></div>
+    <div class="feature-card"><div class="feature-icon">📊</div><h3>Real-Time Risk Dashboard</h3><p>Live decision feed with color-coded risk levels. Risk distribution charts. Pending review queue. Auto-refreshes every 10 seconds.</p></div>
+    <div class="feature-card"><div class="feature-icon">👁️</div><h3>Human Review Workflow</h3><p>Critical and High risk decisions automatically held in pending queue. Reviewer approves or rejects with justification. Full audit trail of every review action.</p></div>
+    <div class="feature-card"><div class="feature-icon">📄</div><h3>Auto PDF Reports</h3><p>One click generates a professional compliance report — AI System Card, Audit Trail, Oversight Record, Risk Summary. Ready for regulators and legal teams.</p></div>
+    <div class="feature-card"><div class="feature-icon">🔌</div><h3>Multi-Agent Support</h3><p>Monitor multiple AI agents simultaneously. Each agent identified by unique ID. Dashboard filterable by agent. Plug-and-play SDK — one import line.</p></div>
+    <div class="feature-card"><div class="feature-icon">⚡</div><h3>Immutable Audit Logs</h3><p>All decision logs are write-once. No entry can be edited or deleted. Preserves complete chain of custody for regulatory submissions.</p></div>
+  </div>
+</section>
+
+<section class="regulations" id="regulations">
+  <div class="regulations-inner">
+    <div class="reveal">
+      <div class="section-label">// REGULATORY COVERAGE</div>
+      <h2 class="section-title">Built for the real<br>compliance landscape.</h2>
+    </div>
+    <div class="reg-grid reveal">
+      <div class="reg-card"><div class="reg-flag">🇪🇺</div><div class="reg-name">EU AI ACT 2024</div><div class="reg-desc">Articles 9, 13, 14, 16. Annex III high-risk classification.</div></div>
+      <div class="reg-card"><div class="reg-flag">🏥</div><div class="reg-name">HIPAA</div><div class="reg-desc">Section 164.312 Audit Controls. Minimum Necessary Standard.</div></div>
+      <div class="reg-card"><div class="reg-flag">🔒</div><div class="reg-name">SOC 2 TYPE II</div><div class="reg-desc">Processing Integrity, Confidentiality, Availability criteria.</div></div>
+      <div class="reg-card"><div class="reg-flag">🇮🇳</div><div class="reg-name">DPDP ACT 2023</div><div class="reg-desc">Rules notified Nov 2025. Section 8 and 9. Rs 250Cr penalty.</div></div>
+      <div class="reg-card"><div class="reg-flag">💻</div><div class="reg-name">IT ACT 2000</div><div class="reg-desc">Sections 43, 66, 72A. Data protection obligations.</div></div>
+      <div class="reg-card"><div class="reg-flag">🏦</div><div class="reg-name">RBI AI GUIDELINES</div><div class="reg-desc">Responsible AI in Banking 2024. KYC and credit decisions.</div></div>
+      <div class="reg-card"><div class="reg-flag">📈</div><div class="reg-name">SEBI AI CIRCULAR</div><div class="reg-desc">AI/ML Circular 2023. Algorithmic trading oversight.</div></div>
+      <div class="reg-card"><div class="reg-flag">🌐</div><div class="reg-name">GDPR</div><div class="reg-desc">Articles 5, 6, 9, 22, 25. Automated decision making rights.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="usecases" id="usecases">
+  <div class="usecases-inner">
+    <div class="reveal">
+      <div class="section-label">// USE CASES</div>
+      <h2 class="section-title">Three industries.<br>One governance layer.</h2>
+    </div>
+    <div class="cases-grid reveal">
+      <div class="case-card healthcare"><div class="case-emoji">🏥</div><div class="case-tag">HEALTHCARE</div><h3>Medical Triage Agent</h3><p>AI recommends care pathways based on patient symptoms. CompliancePilot classifies as Critical under EU AI Act Annex III and HIPAA, flags for mandatory human review.</p><div class="case-risk">Risk: CRITICAL — EU AI ACT + HIPAA + DPDP</div></div>
+      <div class="case-card finance"><div class="case-emoji">💰</div><div class="case-tag">FINANCE</div><h3>Financial Advisory Agent</h3><p>AI suggests portfolio rebalancing based on user financial data. Classified under SOC 2 Processing Integrity and EU AI Act Article 13.</p><div class="case-risk">Risk: HIGH — SOC 2 + EU AI ACT + RBI + SEBI</div></div>
+      <div class="case-card hr"><div class="case-emoji">👥</div><div class="case-tag">HUMAN RESOURCES</div><h3>HR Screening Agent</h3><p>AI scores and ranks job applicants. Classified as High risk under EU AI Act Article 9, flags potential bias documentation requirements.</p><div class="case-risk">Risk: HIGH — EU AI ACT + DPDP ACT 2023</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="tech" id="tech">
+  <div class="reveal">
+    <div class="section-label">// TECH STACK</div>
+    <h2 class="section-title">Built entirely on<br>open source. $0 cost.</h2>
+    <p class="section-desc">Every component is free tier or open source. Zero vendor lock-in. Swap any component via environment variable.</p>
+  </div>
+  <div class="tech-grid reveal">
+    <div class="tech-card"><div class="tech-dot" style="background:#3776ab"></div><div><div class="tech-name">Python 3.11</div><div class="tech-role">Core Language</div></div></div>
+    <div class="tech-card"><div class="tech-dot" style="background:#009688"></div><div><div class="tech-name">FastAPI</div><div class="tech-role">REST API Backend</div></div></div>
+    <div class="tech-card"><div class="tech-dot" style="background:#4285f4"></div><div><div class="tech-name">Gemini 2.5 Flash</div><div class="tech-role">Classification Engine</div></div></div>
+    <div class="tech-card"><div class="tech-dot" style="background:#336791"></div><div><div class="tech-name">Supabase PostgreSQL</div><div class="tech-role">Production Database</div></div></div>
+    <div class="tech-card"><div class="tech-dot" style="background:#3ecf8e"></div><div><div class="tech-name">SQLAlchemy</div><div class="tech-role">ORM Layer</div></div></div>
+    <div class="tech-card"><div class="tech-dot" style="background:#ff6b6b"></div><div><div class="tech-name">ReportLab</div><div class="tech-role">PDF Generation</div></div></div>
+    <div class="tech-card"><div class="tech-dot" style="background:#38bdf8"></div><div><div class="tech-name">TailwindCSS</div><div class="tech-role">Dashboard Styling</div></div></div>
+    <div class="tech-card"><div class="tech-dot" style="background:#46e3b7"></div><div><div class="tech-name">Render.com</div><div class="tech-role">Cloud Deployment</div></div></div>
+    <div class="tech-card"><div class="tech-dot" style="background:#f05032"></div><div><div class="tech-name">GitHub</div><div class="tech-role">Version Control + CI/CD</div></div></div>
+  </div>
+</section>
+
+<div style="padding:0 60px;">
+  <div class="built-by reveal">
+    <div class="built-avatar">DK</div>
+    <div class="built-info">
+      <h3>Built by Deepak K</h3>
+      <p>Fresher building at the intersection of AI and regulatory compliance. CompliancePilot is a working prototype demonstrating enterprise AI governance — built entirely from scratch using open source tools.</p>
+      <div class="built-tags">
+        <span class="built-tag">AI Governance</span>
+        <span class="built-tag">RegTech</span>
+        <span class="built-tag">Responsible AI</span>
+        <span class="built-tag">Open to Opportunities</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="cta-section">
+  <h2 class="reveal">Ready to see it<br>in action?</h2>
+  <p class="reveal">Open the live dashboard and watch real AI decisions being classified in real time.</p>
+  <div class="cta-actions reveal">
+    <a href="/static/index.html" class="btn-primary">Open Live Dashboard →</a>
+    <a href="https://github.com/kdeepak2001/CompliancePilot" target="_blank" class="btn-secondary">View Source Code</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-left">CompliancePilot v1.0.0 — Built by Deepak K — March 2026</div>
+  <div class="footer-links">
+    <a href="/static/index.html">Dashboard</a>
+    <a href="https://github.com/kdeepak2001/CompliancePilot" target="_blank">GitHub</a>
+    <a href="/api/docs">API Docs</a>
+  </div>
+</footer>
+
+<script>
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
