@@ -76,6 +76,7 @@ async def startup_event():
     """
     create_tables()
     logger.info(" CompliancePilot API started successfully")
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
 @app.get("/")
 async def landing():
     from fastapi.responses import FileResponse
