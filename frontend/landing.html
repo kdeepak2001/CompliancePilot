@@ -41,7 +41,7 @@ section { position: relative; z-index: 1; }
 .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3); border-radius: 100px; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--accent); margin-bottom: 32px; animation: fadeUp 0.6s ease both; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 .hero-badge::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
-.hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 24px; animation: fadeUp 0.6s ease 0.1s both; }
+.hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 24px; animation: fadeUp 0.6s ease 0.1s both; }
 .hero h1 span { background: linear-gradient(135deg, var(--accent), #0080ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .hero-sub { font-size: 1.25rem; color: var(--muted); max-width: 600px; line-height: 1.7; margin-bottom: 48px; font-weight: 300; animation: fadeUp 0.6s ease 0.2s both; }
 .hero-actions { display: flex; gap: 16px; align-items: center; animation: fadeUp 0.6s ease 0.3s both; }
@@ -64,11 +64,15 @@ section { position: relative; z-index: 1; }
 .reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 .section-label { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
-.section-title { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 20px; }
+.section-title { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 20px; }
 .section-desc { color: var(--muted); font-size: 1.1rem; line-height: 1.7; max-width: 600px; margin-bottom: 60px; }
+
+.light { --bg: #f8faff; --bg2: #eef2ff; --surface: #ffffff; --border: #d1d9f0; --text: #0a0f1e; --muted: #5a6480; }
+.light body::before { background-image: linear-gradient(rgba(0,100,200,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,100,200,0.04) 1px, transparent 1px); }
+.light .hero h1 span { background: linear-gradient(135deg, #0080cc, #0040ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 </style>
 <style>
-.problem { padding: 100px 60px; max-width: 1200px; margin: 0 auto; }
+.problem { padding: 100px 60px; max-width: 1200px; margin: 0 auto; text-align: center; }
 .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .problem-card { padding: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; transition: all 0.3s; }
 .problem-card:hover { border-color: var(--accent2); transform: translateY(-4px); }
@@ -114,7 +118,7 @@ section { position: relative; z-index: 1; }
 .case-card.healthcare::after { background: var(--critical); }
 .case-card.finance::after { background: var(--medium); }
 .case-card.hr::after { background: var(--high); }
-.case-card:hover { transform: translateY(-6px); box-shadow: 0 30px 60px rgba(0,0,0,0.3); }
+.case-card:hover { transform: translateY(-6px); box-shadow: 0 30px 60px rgba(0,0,0,0.3); }<button onclick="toggleTheme()" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:6px;cursor:pointer;font-size:0.9rem;margin-right:12px;" id="themeBtn">☀️ Light</button><a href="/static/index.html" class="nav-cta">Open Dashboard →</a>
 .case-emoji { font-size: 2.5rem; margin-bottom: 20px; }
 .case-tag { display: inline-block; padding: 4px 12px; border-radius: 100px; font-family: 'Space Mono', monospace; font-size: 0.7rem; font-weight: 700; margin-bottom: 16px; }
 .healthcare .case-tag { background: rgba(255,60,95,0.15); color: var(--critical); }
@@ -124,7 +128,7 @@ section { position: relative; z-index: 1; }
 .case-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; }
 .case-risk { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--muted); }
 .cta-section { padding: 120px 60px; text-align: center; }
-.cta-section h2 { font-family: 'Syne', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 20px; }
+.cta-section h2 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 20px; }
 .cta-section p { color: var(--muted); font-size: 1.1rem; margin-bottom: 48px; }
 .cta-actions { display: flex; gap: 16px; justify-content: center; }
 .built-by { padding: 60px; max-width: 1200px; margin: 60px auto; display: flex; align-items: center; gap: 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
@@ -156,7 +160,7 @@ footer { padding: 40px 60px; border-top: 1px solid var(--border); display: flex;
     <li><a href="#usecases">Use Cases</a></li>
     <li><a href="#tech">Tech Stack</a></li>
   </ul>
-  <a href="/static/index.html" class="nav-cta">Open Dashboard →</a>
+  <button onclick="toggleTheme()" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:6px;cursor:pointer;font-size:0.9rem;margin-right:12px;" id="themeBtn">☀️ Light</button><a href="/static/index.html" class="nav-cta">Open Dashboard →</a>
 </nav>
 
 <section class="hero">
@@ -320,6 +324,31 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.1 });
 reveals.forEach(el => observer.observe(el));
+
+function toggleTheme() {
+  const root = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  if (root.classList.contains('light')) {
+    root.classList.remove('light');
+    btn.textContent = '☀️ Light';
+  } else {
+    root.classList.add('light');
+    btn.textContent = '🌙 Dark';
+  }
+}
+
+function toggleTheme() {
+  const root = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  if (root.classList.contains('light')) {
+    root.classList.remove('light');
+    btn.textContent = '☀️ Light';
+  } else {
+    root.classList.add('light');
+    btn.textContent = '🌙 Dark';
+  }
+}
+</script>
 </script>
 </body>
 </html>
