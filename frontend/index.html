@@ -1068,6 +1068,7 @@
 
             // Review queue
             await loadReviewQueue();
+        loadApprovedQueue();
 
         } catch (e) {
             console.error('Stats error:', e);
@@ -1110,7 +1111,40 @@
     }
 
     // ── LOAD REVIEW QUEUE ──
-    async function loadReviewQueue() {
+    async function loadApprovedQueue() {
+  try {
+    const res = await fetch(`${API}/api/decisions?review_status=approved&limit=100`);
+    const data = await res.json();
+    const approved = data.data || [];
+    const count = document.getElementById('approvedCount');
+    const queue = document.getElementById('approvedQueue');
+    if(count) count.textContent = approved.length + ' APPROVED';
+    if(!queue) return;
+    if(approved.length === 0) {
+      queue.innerHTML = '<div style="padding:20px;text-align:center;color:#6b7a99;font-size:0.85rem;">No approved decisions yet</div>';
+      return;
+    }
+    queue.innerHTML = approved.map(d => `
+      <div style="padding:14px 20px;border-bottom:1px solid #1a2540;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="color:#00ff88;font-family:'Courier New',monospace;font-size:0.85rem;">#${d.id}</span>
+          <span style="background:rgba(0,255,136,0.1);color:#00ff88;padding:2px 10px;border-radius:4px;font-size:0.75rem;">APPROVED</span>
+        </div>
+        <div style="color:#a0aec0;font-size:0.8rem;margin-bottom:4px;">${d.agent_id}</div>
+        <div style="color:#e8edf5;font-size:0.85rem;margin-bottom:6px;">${(d.input_prompt||'').substring(0,80)}...</div>
+        <div style="display:flex;gap:16px;font-size:0.75rem;color:#6b7a99;">
+          <span>Reviewer: <span style="color:#00d4ff;">${d.reviewer_id || 'N/A'}</span></span>
+          <span>Reviewed: <span style="color:#00d4ff;">${d.reviewed_at ? d.reviewed_at.substring(0,10) : 'N/A'}</span></span>
+        </div>
+        <div style="margin-top:6px;font-size:0.75rem;color:#6b7a99;">Justification: <span style="color:#a0aec0;">${(d.reviewer_justification||'N/A').substring(0,100)}</span></div>
+      </div>
+    `).join('');
+  } catch(e) {
+    console.error('Failed to load approved queue', e);
+  }
+}
+
+async function loadReviewQueue() {
         try {
             const res = await fetch(`${API}/api/decisions?review_status=pending&limit=100`);
             const data = await res.json();
@@ -1242,6 +1276,14 @@
 <!-- FLOATING SUBMIT BUTTON -->
 <button onclick="document.getElementById('submitModal').style.display='flex'" style="position:fixed;bottom:32px;right:32px;z-index:1000;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#0080ff);border:none;cursor:pointer;font-size:1.5rem;box-shadow:0 8px 32px rgba(0,212,255,0.4);transition:all 0.2s;" title="Submit Decision">+</button>
 
+
+<div class="card" style="margin-top:24px;">
+  <div class="card-header">
+    <span class="card-title">APPROVED DECISIONS</span>
+    <span id="approvedCount" style="background:rgba(0,255,136,0.1);color:#00ff88;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-family:'Courier New',monospace;">0 APPROVED</span>
+  </div>
+  <div id="approvedQueue" style="max-height:400px;overflow-y:auto;scroll-behavior:smooth;"></div>
+</div>
 <!-- SUBMIT MODAL -->
 <div id="submitModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;">
   <div style="background:#0d1526;border:1px solid #1a2540;border-radius:16px;padding:40px;width:100%;max-width:600px;position:relative;">
