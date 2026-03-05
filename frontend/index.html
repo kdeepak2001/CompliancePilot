@@ -982,7 +982,7 @@
 
     // ── CLOCK ──
     function updateClock() {
-        const now = new Date();
+        const now = new Date(); const istOffset = 5.5 * 60 * 60 * 1000; const istTime = new Date(now.getTime() + istOffset);
         document.getElementById('headerTime').textContent =
             now.toUTCString().replace('GMT', 'UTC');
     }
@@ -1016,7 +1016,7 @@
     // ── FORMAT TIME ──
     function formatTime(ts) {
         if (!ts) return '—';
-        const d = new Date(ts);
+        const d = new Date(new Date(ts).getTime() + 5.5 * 60 * 60 * 1000);
         return d.toISOString().replace('T', ' ').substring(0, 16) + ' UTC';
     }
 
