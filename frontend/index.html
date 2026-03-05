@@ -810,7 +810,7 @@
         .stat-card:nth-child(4) { animation-delay: 0.2s; }
     </style>
 </head>
-<body>
+<body><a href="/" style="position:fixed;top:20px;left:20px;z-index:1000;padding:8px 16px;background:rgba(13,21,38,0.9);border:1px solid #1a2540;border-radius:6px;color:#00d4ff;text-decoration:none;font-size:0.8rem;font-family:Courier New,monospace;backdrop-filter:blur(10px);">← Home</a>
 
 <!-- HEADER -->
 <header class="header">
@@ -1264,19 +1264,76 @@
     </div>
 
     <div style="margin-bottom:24px;">
-      <label style="display:block;color:#6b7a99;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">AI Output</label>
-      <textarea id="submitOutput" rows="3" placeholder="e.g. Recommend immediate ECG and cardiology consultation..." style="width:100%;padding:10px 14px;background:#050810;border:1px solid #1a2540;border-radius:8px;color:#e8edf5;font-size:0.9rem;resize:vertical;font-family:inherit;"></textarea>
+      <label id="outputLabel" style="display:none;color:#6b7a99;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">AI Generated Output</label>
+      <textarea id="submitOutput" rows="3" placeholder="AI output will appear here after generation..." style="display:none;width:100%;padding:10px 14px;background:#050810;border:1px solid #00ff88;border-radius:8px;color:#e8edf5;font-size:0.9rem;resize:vertical;font-family:inherit;"></textarea>
     </div>
 
-    <div style="display:flex;gap:12px;">
-      <button onclick="submitDecision()" style="flex:1;padding:12px;background:linear-gradient(135deg,#00d4ff,#0080ff);border:none;border-radius:8px;color:#000;font-weight:700;font-size:1rem;cursor:pointer;font-family:'Courier New',monospace;">SUBMIT FOR REVIEW</button>
+    <div style="display:flex;gap:12px;margin-bottom:16px;">
+      <button id="generateBtn" onclick="generateAIOutput()" style="flex:1;padding:12px;background:linear-gradient(135deg,#00ff88,#00aa55);border:none;border-radius:8px;color:#000;font-weight:700;font-size:1rem;cursor:pointer;font-family:'Courier New',monospace;">GENERATE AI OUTPUT</button>
       <button onclick="document.getElementById('submitModal').style.display='none'" style="padding:12px 24px;background:transparent;border:1px solid #1a2540;border-radius:8px;color:#6b7a99;cursor:pointer;">Cancel</button>
     </div>
+    <button id="submitBtn" onclick="submitDecision()" style="display:none;width:100%;padding:12px;background:linear-gradient(135deg,#00d4ff,#0080ff);border:none;border-radius:8px;color:#000;font-weight:700;font-size:1rem;cursor:pointer;font-family:'Courier New',monospace;margin-bottom:8px;">SUBMIT FOR COMPLIANCE REVIEW</button>
     <div id="submitResult" style="margin-top:16px;display:none;"></div>
   </div>
 </div>
 
 <script>
+async function generateAIOutput() {
+  const agent = document.getElementById('submitAgent').value;
+  const input = document.getElementById('submitInput').value.trim();
+  const result = document.getElementById('submitResult');
+  const outputBox = document.getElementById('submitOutput');
+  const generateBtn = document.getElementById('generateBtn');
+  const submitBtn = document.getElementById('submitBtn');
+
+  if (!input) {
+    result.style.display = 'block';
+    result.innerHTML = '<p style="color:#ff3c5f;">Please enter an Input Scenario first.</p>';
+    return;
+  }
+
+  const agentPrompts = {
+    'medical-triage-v1': 'You are a medical triage AI agent. Based on the patient symptoms provided, recommend a care pathway. Be specific and clinical.',
+    'hr-screening-v1': 'You are an HR screening AI agent. Based on the candidate profile provided, give a screening assessment and score out of 100.',
+    'financial-advisory-v1': 'You are a financial advisory AI agent. Based on the client financial profile provided, recommend portfolio actions.'
+  };
+
+  generateBtn.textContent = 'Generating...';
+  generateBtn.disabled = true;
+  result.style.display = 'block';
+  result.innerHTML = '<p style="color:#00d4ff;">AI agent generating response...</p>';
+
+  try {
+    const res = await fetch(`${API}/api/generate-output`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ agent_id: agent, input_prompt: input })
+    });
+    const data = await res.json();
+    const aiOutput = data.output || data.text || JSON.stringify(data);
+    const outputBox = document.getElementById('submitOutput');
+    const submitBtn = document.getElementById('submitBtn');
+    const outputLabel = document.getElementById('outputLabel');
+    outputBox.value = aiOutput;
+    outputBox.style.display = 'block';
+    if(outputLabel) outputLabel.style.display = 'block';
+    if(submitBtn) submitBtn.style.display = 'block';
+    outputBox.value = aiOutput;
+    outputBox.style.display = 'block';
+    document.getElementById('outputLabel').style.display = 'block';
+    submitBtn.style.display = 'block';
+    result.innerHTML = '<p style="color:#00ff88;">✓ AI output generated. Review and submit for compliance.</p>';
+  } catch(e) {
+    result.innerHTML = '<p style="color:#ff3c5f;">Generation failed. You can type the AI output manually below.</p>';
+    outputBox.style.display = 'block';
+    document.getElementById('outputLabel').style.display = 'block';
+    submitBtn.style.display = 'block';
+  }
+
+  generateBtn.textContent = 'Generate AI Output';
+  generateBtn.disabled = false;
+}
+
 async function submitDecision() {
   const agent = document.getElementById('submitAgent').value;
   const input = document.getElementById('submitInput').value.trim();
@@ -1285,7 +1342,7 @@ async function submitDecision() {
 
   if (!input || !output) {
     result.style.display = 'block';
-    result.innerHTML = '<p style="color:#ff3c5f;">Please fill in both Input Scenario and AI Output.</p>';
+    result.innerHTML = '<p style="color:#ff3c5f;">Please generate or enter AI output first.</p>';
     return;
   }
 
@@ -1296,7 +1353,7 @@ async function submitDecision() {
   };
 
   result.style.display = 'block';
-  result.innerHTML = '<p style="color:#00d4ff;">Submitting and classifying...</p>';
+  result.innerHTML = '<p style="color:#00d4ff;">Submitting for compliance review...</p>';
 
   try {
     const res = await fetch(`${API}/api/decisions/log`, {
@@ -1315,9 +1372,12 @@ async function submitDecision() {
     });
     const data = await res.json();
     if (data.success) {
-      result.innerHTML = '<p style="color:#00ff88;">✓ Decision submitted! ID: ' + data.decision_id + '. Classification in progress...</p>';
+      result.innerHTML = '<p style="color:#00ff88;">✓ Submitted! Decision ID: ' + data.decision_id + '. Classifying now...</p>';
       document.getElementById('submitInput').value = '';
       document.getElementById('submitOutput').value = '';
+      document.getElementById('submitOutput').style.display = 'none';
+      document.getElementById('outputLabel').style.display = 'none';
+      document.getElementById('submitBtn').style.display = 'none';
       setTimeout(() => {
         document.getElementById('submitModal').style.display = 'none';
         result.style.display = 'none';
