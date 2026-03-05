@@ -1112,7 +1112,7 @@
     // ── LOAD REVIEW QUEUE ──
     async function loadReviewQueue() {
         try {
-            const res = await fetch(`${API}/api/decisions?review_status=pending&limit=10`);
+            const res = await fetch(`${API}/api/decisions?review_status=pending&limit=100`);
             const data = await res.json();
             const pending = data.data || [];
 
