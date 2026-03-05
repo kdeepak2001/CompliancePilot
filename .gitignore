@@ -14,7 +14,7 @@ __pycache__/
 *.sqlite3
 
 # Generated PDF reports
-reports/
+/reports/
 
 # VS Code settings
 .vscode/
