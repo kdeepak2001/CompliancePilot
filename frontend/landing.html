@@ -65,14 +65,14 @@ section { position: relative; z-index: 1; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 .section-label { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
 .section-title { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 20px; }
-.section-desc { color: var(--muted); font-size: 1rem; line-height: 1.8; max-width: 560px; margin-bottom: 60px; }
+.section-desc { color: var(--muted); font-size: 1rem; line-height: 1.8; max-width: 700px; margin-bottom: 60px; }
 
 .light { --bg: #f8faff; --bg2: #eef2ff; --surface: #ffffff; --border: #d1d9f0; --text: #0a0f1e; --muted: #5a6480; }
 .light body::before { background-image: linear-gradient(rgba(0,100,200,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,100,200,0.04) 1px, transparent 1px); }
 .light .hero h1 span { background: linear-gradient(135deg, #0080cc, #0040ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 </style>
 <style>
-.problem { padding: 100px 60px; max-width: 1200px; margin: 0 auto; text-align: center; }
+.problem { padding: 100px 60px; max-width: 1200px; margin: 0 auto; text-align: left; }
 .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .problem-card { padding: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; transition: all 0.3s; }
 .problem-card:hover { border-color: var(--accent2); transform: translateY(-4px); }
@@ -191,7 +191,7 @@ footer { padding: 40px 60px; border-top: 1px solid var(--border); display: flex;
   <div class="reveal">
     <div class="section-label">// THE PROBLEM</div>
     <h2 class="section-title">Companies are flying blind<br>on AI compliance.</h2>
-    <p class="section-desc">Every AI agent your organization runs is making autonomous decisions right now — with zero documentation, zero oversight records, and zero regulatory evidence.</p>
+    <p class="section-desc" style="text-align:left;max-width:800px;">Every AI agent your organization runs is making autonomous decisions right now — with zero documentation, zero oversight records, and zero regulatory evidence.</p>
   </div>
   <div class="problem-grid reveal">
     <div class="problem-card"><div class="problem-icon">⚖️</div><h3>EU AI Act is Law</h3><p>High-risk AI systems must have audit trails, human oversight records, and compliance documentation by August 2026. Most companies have nothing.</p></div>
@@ -240,7 +240,7 @@ footer { padding: 40px 60px; border-top: 1px solid var(--border); display: flex;
       <div class="reg-card"><div class="reg-flag">🇪🇺</div><div class="reg-name">EU AI ACT 2024</div><div class="reg-desc">Articles 9, 13, 14, 16. Annex III high-risk classification.</div></div>
       <div class="reg-card"><div class="reg-flag">🏥</div><div class="reg-name">HIPAA</div><div class="reg-desc">Section 164.312 Audit Controls. Minimum Necessary Standard.</div></div>
       <div class="reg-card"><div class="reg-flag">🔒</div><div class="reg-name">SOC 2 TYPE II</div><div class="reg-desc">Processing Integrity, Confidentiality, Availability criteria.</div></div>
-      <div class="reg-card"><div class="reg-flag">🇮🇳</div><div class="reg-name">DPDP ACT 2023</div><div class="reg-desc">Rules notified Nov 2025. Section 8 and 9. Rs 250Cr penalty.</div></div>
+      <div class="reg-card"><div class="reg-flag" style="font-size:2rem;">🇮🇳</div><div class="reg-name">DPDP ACT 2023</div><div class="reg-desc">Rules notified Nov 2025. Section 8 and 9. Rs 250Cr penalty.</div></div>
       <div class="reg-card"><div class="reg-flag">💻</div><div class="reg-name">IT ACT 2000</div><div class="reg-desc">Sections 43, 66, 72A. Data protection obligations.</div></div>
       <div class="reg-card"><div class="reg-flag">🏦</div><div class="reg-name">RBI AI GUIDELINES</div><div class="reg-desc">Responsible AI in Banking 2024. KYC and credit decisions.</div></div>
       <div class="reg-card"><div class="reg-flag">📈</div><div class="reg-name">SEBI AI CIRCULAR</div><div class="reg-desc">AI/ML Circular 2023. Algorithmic trading oversight.</div></div>
