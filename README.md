@@ -257,11 +257,42 @@ CompliancePilot/
 
 ---
 
-## 👤 Built By
+### 🚀 Future Upgrades
 
-**Kalava Deepak** — 2024 ECE Graduate | AI Developer | Open to Opportunities
+| Feature | Description | Priority |
+|---------|-------------|----------|
+| 🧠 RAGAS Evaluation | Measure classification accuracy — faithfulness, relevance, precision | High |
+| 🔐 Role-Based Access | Compliance Officer / Auditor / Admin with separate views | High |
+| 📚 RAG Policy Engine | Upload company-specific compliance policies — system learns from them | High |
+| 🔔 Real-Time Alerts | Slack and Teams notifications for Critical decisions instantly | Medium |
+| 🌍 More Frameworks | CCPA, FDA 21 CFR Part 11, FINRA, ISO 42001 support | Medium |
+| 🏢 Multi-Tenant SaaS | Multiple companies on one instance with isolated data | Medium |
+| 💬 Natural Language Query | Ask compliance questions — "Show all Critical HR decisions last month" | Low |
+| 📡 Regulatory Feed | Auto-updates classification rules as new regulations are published | Low |
 
-> Built CompliancePilot from scratch in 8 weeks using Python, FastAPI, Gemini 2.5 Flash, and open source tools. Total infrastructure cost: $0.
+
+```
+---
+
+## 👤 Author
+
+<div align="center">
+
+### **Kalava Deepak**
+#### ECE Graduate 2024 | AI Developer | Open to Opportunities
+
+[![GitHub](https://img.shields.io/badge/GitHub-kdeepak2001-181717?style=for-the-badge&logo=github)](https://github.com/kdeepak2001)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/kalava-deepak)
+[![Email](https://img.shields.io/badge/Email-Contact-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:kalavadeepak2001@gmail.com)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-CompliancePilot-00d4ff?style=for-the-badge)](https://compliancepilot.onrender.com)
+
+---
+
+> *"I built CompliancePilot to solve a real enterprise problem — not just to learn a framework.
+> Every component was designed with production readiness and regulatory accuracy in mind."*
+
+</div>
+> Built CompliancePilot from scratch in 4 weeks using Python, FastAPI, Gemini 2.5 Flash, and open source tools. Total infrastructure cost: $0.
 
 | | |
 |--|--|
@@ -271,6 +302,7 @@ CompliancePilot/
 | 📧 Email | kalavadeepak2001@gmail.com |
 
 **Open to roles in:** AI Governance | Responsible AI | RegTech | AI Product Management | GenAI Engineering
+📍 Bangalore, India | ⚡ Immediate Joiner | 🌏 Open to Relocation
 
 ---
 
