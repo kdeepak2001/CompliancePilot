@@ -1,30 +1,31 @@
-# CompliancePilot 
+# CompliancePilot 🛡️
 ### AI Regulatory Governance Layer — Automated Compliance for Every AI Decision
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Now-00d4ff?style=for-the-badge)](https://compliancepilot.onrender.com)
 [![Dashboard](https://img.shields.io/badge/Dashboard-Open%20Live-00ff88?style=for-the-badge)](https://compliancepilot.onrender.com/static/index.html)
 [![API Docs](https://img.shields.io/badge/API%20Docs-Swagger-orange?style=for-the-badge)](https://compliancepilot.onrender.com/api/docs)
-[![GitHub](https://img.shields.io/badge/Made%20by-Kalava%20Deepak-white?style=for-the-badge&logo=github)](https://github.com/kdeepak2001)
+[![License](https://img.shields.io/badge/License-MIT%20%2B%20Commons%20Clause-red?style=for-the-badge)](LICENSE)
+[![Copyright](https://img.shields.io/badge/Copyright-Kalava%20Deepak%202026-white?style=for-the-badge)](NOTICE)
 
 ---
 
 ## 📸 Screenshots
 
-###  Landing Page
+### 🌐 Landing Page
 ![Landing Page](screenshots/landing.png)
 
-###  Live Dashboard
+### 📊 Live Dashboard
 ![Dashboard](screenshots/dashboard.png)
 
-###  Human Review Queue
+### 👁️ Human Review Queue
 ![Review Queue](screenshots/review.png)
 
-###  Auto-Generated PDF Compliance Report
+### 📄 Auto-Generated PDF Compliance Report
 ![Compliance Report](screenshots/report.png)
 
 ---
 
-##  The Problem
+## 🚨 The Problem
 
 Every company deploying AI agents in 2026 faces the same crisis:
 
@@ -38,33 +39,31 @@ Every company deploying AI agents in 2026 faces the same crisis:
 
 ---
 
-##  What CompliancePilot Does
+## ✅ What CompliancePilot Does
 
 CompliancePilot is a three-layer AI middleware system:
 
 | Layer | What It Does |
 |-------|-------------|
-|  Decision Interception | Captures every AI agent decision — input, output, timestamps, tool calls — automatically |
-|  Regulatory Classification | Gemini 2.5 Flash classifies each decision against 8+ regulatory frameworks in under 5 seconds |
-|  Compliance Evidence | Auto-generates audit-ready PDF reports — AI System Card, Audit Trail, Human Oversight Record |
+| 🔍 Decision Interception | Captures every AI agent decision — input, output, timestamps, tool calls — automatically |
+| ⚖️ Regulatory Classification | Gemini 2.5 Flash classifies each decision against 8+ regulatory frameworks in under 5 seconds |
+| 📄 Compliance Evidence | Auto-generates audit-ready PDF reports — AI System Card, Audit Trail, Human Oversight Record |
 
 ---
 
-##  Live Demo
+## 🎯 Live Demo
 
 > **Try it yourself — no login required**
 
- **Landing Page:** https://compliancepilot.onrender.com
-
- **Live Dashboard:** https://compliancepilot.onrender.com/static/index.html
-
- **API Docs:** https://compliancepilot.onrender.com/api/docs
+🌐 **Landing Page:** https://compliancepilot.onrender.com
+📊 **Live Dashboard:** https://compliancepilot.onrender.com/static/index.html
+📚 **API Docs:** https://compliancepilot.onrender.com/api/docs
 
 ### How to Demo
-1. Click **+** button → Select Medical Triage Agent → Type a patient scenario → Click Generate AI Output → Submit for Compliance Review → Watch Critical risk classification appear in live feed
+1. Click **+** button → Select Financial Advisory Agent → Type a transaction scenario → Click Generate AI Output → Submit for Compliance Review → Watch Critical risk classification appear
 2. Click **📂** button → Upload sample CSV → Watch bulk decisions classified with progress bar
 3. Click **Generate Report** → Download professional 4-page PDF compliance report
-4. Approve a Critical decision in Review Queue → See it logged permanently with reviewer ID and justification
+4. Approve a Critical decision in Review Queue → See it permanently logged with reviewer ID and justification
 
 ---
 
@@ -73,13 +72,13 @@ CompliancePilot is a three-layer AI middleware system:
 | Framework | Coverage |
 |-----------|---------|
 | 🇪🇺 EU AI Act 2024 | Articles 9, 13, 14, 16 — Annex III high-risk classification |
-|  HIPAA | Section 164.312 Audit Controls — Minimum Necessary Standard |
-|  SOC 2 Type II | Processing Integrity, Confidentiality, Availability criteria |
+| 🏥 HIPAA | Section 164.312 Audit Controls — Minimum Necessary Standard |
+| 🔒 SOC 2 Type II | Processing Integrity, Confidentiality, Availability criteria |
 | 🇮🇳 DPDP Act 2023 | Section 8 and 9 — Rules notified November 2025 |
-|  IT Act 2000 | Sections 43, 66, 72A — Data protection obligations |
-|  RBI AI Guidelines 2024 | Responsible AI in Banking — KYC and credit decisions |
-|  SEBI AI Circular 2023 | Algorithmic trading oversight and audit trail |
-|  GDPR | Articles 5, 6, 9, 22, 25 — Automated decision making rights |
+| 💻 IT Act 2000 | Sections 43, 66, 72A — Data protection obligations |
+| 🏦 RBI AI Guidelines 2024 | Responsible AI in Banking — KYC and credit decisions |
+| 📈 SEBI AI Circular 2023 | Algorithmic trading oversight and audit trail |
+| 🌐 GDPR | Articles 5, 6, 9, 22, 25 — Automated decision making rights |
 
 ---
 
@@ -111,7 +110,7 @@ Action:         Potential bias documentation flagged for compliance review
 
 ---
 
-##  System Architecture
+## 🔄 System Architecture
 ```
 AI Agent Output
       ↓
@@ -137,8 +136,8 @@ Dashboard + Review Queue + PDF Reports
 | Language | Python 3.11 |
 | Backend | FastAPI + Uvicorn |
 | AI Engine | Google Gemini 2.5 Flash |
-| Database (Local) | SQLite |
-| Database (Cloud) | Supabase PostgreSQL |
+| Database Local | SQLite |
+| Database Cloud | Supabase PostgreSQL |
 | ORM | SQLAlchemy |
 | Frontend | HTML + TailwindCSS CDN + Alpine.js |
 | PDF Reports | ReportLab |
@@ -150,7 +149,7 @@ Dashboard + Review Queue + PDF Reports
 
 ---
 
-##  Proof of Work
+## 📊 Proof of Work
 
 ### Classification Results (Live Data)
 
@@ -175,10 +174,11 @@ Dashboard + Review Queue + PDF Reports
 
 | Feature | Implementation |
 |---------|---------------|
-| PII Masking | Regex-based detection — Aadhaar, PAN, phone, email masked before external API |
-| Immutable Logs | Write-once database records — no edit or delete through application interface |
+| PII Masking | Regex-based — Aadhaar, PAN, phone, email masked before external API |
+| Immutable Logs | Write-once database records — no edit or delete |
 | Environment Variables | All API keys in .env — never hardcoded |
 | Privacy by Design | GDPR Article 25 — data minimization at architecture level |
+| RLS Enabled | Row Level Security on all Supabase tables |
 | Secure Headers | CORS middleware with controlled origins |
 
 ---
@@ -231,53 +231,52 @@ CompliancePilot/
 │   ├── index.html               # Live real-time dashboard
 │   └── landing.html             # Product landing page
 ├── screenshots/
-│   ├── landing.png              # Landing page screenshot
-│   ├── dashboard.png            # Dashboard screenshot
-│   ├── review.png               # Review queue screenshot
-│   └── report.png               # PDF report screenshot
+│   ├── landing.png
+│   ├── dashboard.png
+│   ├── review.png
+│   └── report.png
 ├── main.py                      # Application entry point
-├── requirements.txt             # Python dependencies
-├── .env.example                 # Environment variables template
-├── Dockerfile                   # Container configuration
-└── render.yaml                  # Render.com deployment config
+├── requirements.txt
+├── .env.example
+├── LICENSE
+├── SECURITY.md
+└── NOTICE
 ```
 
 ---
 
 ## 🗺️ Roadmap
 
-- [ ] RAGAS evaluation metrics for classification accuracy measurement
-- [ ] Role-based access control — Compliance Officer / Auditor / Admin
-- [ ] RAG integration for custom company compliance policies
-- [ ] Multi-tenant SaaS architecture
-- [ ] Natural language query interface for compliance officers
-- [ ] Real-time regulatory update feed as laws evolve
-- [ ] Slack and Teams notifications for Critical decisions
-- [ ] CCPA, FDA 21 CFR Part 11, FINRA framework support
+| Feature | Description | Priority |
+|---------|-------------|----------|
+| 🛡️ AI Guardian Agent | Monitors all agents 24/7 — auto-pauses anomalous agents | High |
+| 🧠 Sentiment Analysis | Detects biased or hostile AI outputs before they reach users | High |
+| 📊 Compliance Health Score | Live 0-100 score per agent — drops below 70 triggers alert | High |
+| 🔐 Role-Based Access | Compliance Officer / Auditor / Admin separate views | High |
+| 🔔 Real-Time Alerts | Slack and Teams notifications for Critical decisions | Medium |
+| 🌍 More Frameworks | CCPA, FDA 21 CFR Part 11, FINRA, ISO 42001 | Medium |
+| 🏢 Multi-Tenant SaaS | Multiple companies on one instance with isolated data | Medium |
+| 💬 Natural Language Query | Ask — Show all Critical HR decisions last month | Low |
+| 📡 Regulatory Feed | Auto-updates rules as new regulations are published | Low |
 
 ---
 
-### 🚀 Future Upgrades
+## 🔒 License and Copyright
 
-| Feature | Description | Priority |
-|---------|-------------|----------|
-| 🧠 RAGAS Evaluation | Measure classification accuracy — faithfulness, relevance, precision | High |
-| 🔐 Role-Based Access | Compliance Officer / Auditor / Admin with separate views | High |
-| 📚 RAG Policy Engine | Upload company-specific compliance policies — system learns from them | High |
-| 🔔 Real-Time Alerts | Slack and Teams notifications for Critical decisions instantly | Medium |
-| 🌍 More Frameworks | CCPA, FDA 21 CFR Part 11, FINRA, ISO 42001 support | Medium |
-| 🏢 Multi-Tenant SaaS | Multiple companies on one instance with isolated data | Medium |
-| 💬 Natural Language Query | Ask compliance questions — "Show all Critical HR decisions last month" | Low |
-| 📡 Regulatory Feed | Auto-updates classification rules as new regulations are published | Low |
+Copyright (c) 2026 **Kalava Deepak**. All rights reserved.
 
+This project is licensed under MIT License with Commons Clause.
+Commercial use requires written permission from the author.
 
-```
-```
+📧 kalavadeepak2001@gmail.com | 📞 +91 9502684256
+
+---
+
 ## 👤 Author
 
 <div align="center">
 
-### **Kalava Deepak**
+### Kalava Deepak
 #### ECE Graduate 2024 | AI Developer | Open to Opportunities
 
 [![GitHub](https://img.shields.io/badge/GitHub-kdeepak2001-181717?style=for-the-badge&logo=github)](https://github.com/kdeepak2001)
@@ -285,32 +284,24 @@ CompliancePilot/
 [![Email](https://img.shields.io/badge/Email-Contact-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:kalavadeepak2001@gmail.com)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-CompliancePilot-00d4ff?style=for-the-badge)](https://compliancepilot.onrender.com)
 
----
+> *"I built CompliancePilot to solve a real enterprise problem — not just to learn a framework. Every component was designed with production readiness and regulatory accuracy in mind."*
 
-> *"I built CompliancePilot to solve a real enterprise problem — not just to learn a framework.
-> Every component was designed with production readiness and regulatory accuracy in mind."*
+**Built in 8 weeks. Total cost: $0. Fully production-ready architecture.**
+
+📍 Bangalore, India | ⚡ Immediate Joiner | 🌏 Open to Relocation
+
+**Open to roles in:** `AI Governance` `Responsible AI` `RegTech` `AI Product` `GenAI Engineering`
 
 </div>
-> Built CompliancePilot from scratch in 4 weeks using Python, FastAPI, Gemini 2.5 Flash, and open source tools. Total infrastructure cost: $0.
-
-| | |
-|--|--|
-| 🌐 Live Demo | https://compliancepilot.onrender.com |
-| 💼 LinkedIn | https://linkedin.com/in/kalava-deepak |
-| 🐙 GitHub | https://github.com/kdeepak2001 |
-| 📧 Email | kalavadeepak2001@gmail.com |
-
-**Open to roles in:** AI Governance | Responsible AI | RegTech | AI Product Management | GenAI Engineering
-📍 Bangalore, India | ⚡ Immediate Joiner | 🌏 Open to Relocation
 
 ---
 
 ## ⚠️ Disclaimer
 
-This system is a compliance evidence aid only and does not constitute legal, medical, or financial advice. Classifications are AI-assisted recommendations requiring human validation for High and Critical risk decisions. Organizations must consult qualified legal counsel for final compliance determinations in their jurisdiction.
+This system is a compliance evidence aid only and does not constitute legal, medical, or financial advice. Classifications are AI-assisted recommendations requiring human validation for High and Critical risk decisions. Organizations must consult qualified legal counsel for final compliance determinations.
 
-For Indian operations: DPDP Act 2023 Rules notified 14 November 2025. Data Protection Board operational. Maximum penalty Rs 250 crores per breach.
+For Indian operations: DPDP Act 2023 Rules notified November 2025. Data Protection Board operational. Maximum penalty Rs 250 crores per breach.
 
 ---
 
-*CompliancePilot v1.0.0 — March 2026 — Built by Kalava Deepak*
+*CompliancePilot v1.0.0 — March 2026 — © Kalava Deepak*
